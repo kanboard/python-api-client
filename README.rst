@@ -17,6 +17,16 @@ Installation
 
 The library is compatible with Python 2 and Python 3.
 
+Prerequisites
+=============
+
+The library needs the requests library
+
+.. code-block:: bash
+
+    pip install requests
+
+
 Examples
 ========
 
