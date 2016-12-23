@@ -1,19 +1,15 @@
 language: python
-
 python:
   - '3.5'
-
 install:
   - pip install tox
-
 script:
   - tox
-
 deploy:
   provider: pypi
   user: fguillot
   password:
-    secure: cK52BI4mg1mLCjFCS/oUZ1p76VKWxAgX0tJImzf68twxs78m8gNQIxuT9g/pvD3liF9q1wM9s2U6t53me+lUL0lsPvhfaOrp2/6dRQ3s81BEtwGokQS98Ty0Lk5YG3Qb9U5lPLwJCdc6nnp6k9/Rz9tntiSYHEH1MmYSYKHJ6xoLv7qfMMuTIdgf2ry+/t9U816nE+YUWdxAJ84Ilb5hr8btSqqWnYX01Mb3uJeXi0wBqKjVl+d1qLPAV/+OgvnbJa+9C9/pJ3MCe0bMyfutW+slBbXLn2herqRFW3FgOEh9pS4kjtJu74N91KAZrWglI0R6qbSGaWF6+K6kwGnGkb3jBYy+6vX/TMa5IZkXfw8HDSGo/OuFuFRNHyRTrnUMrXXPYV7Sx21mosYo9u+CMbbnT5bgtK1X4cW+g9cl4gTp9F6Qcj+GOB4MPvB+jiwkJMl2lF1qyuFmUBYeqwzLtT80Bt+YzpBTSKujC1svKdiss0hjuXJKljN2VMi/3K1jS7jm/wR9tn9OtV8Kl4PHZ5gGvNeXblij2oosTWbGQ19MW8TNDmAKdrgp9lK85qvzyZ8+RWpZMkasx9P5QF6w+UVGzZuwObhevwxCJaoFmJSxttjO7a8b/yIC815nK7hCxU+9cNmmJWPw0V5/96jGbnUmySQTc9ZCPNvd1RLi134=
+    secure: d9LwxCuaY/gpaGtFBbtL+Fya2Bw7o2HGw8jUTqOJwGdMCpWgnKk7HwBb0p9Xehu+xsaqhV3+z36OHpyESNQBgJMb78J8eyGbuNRrIxB+Lo6PRExHhq+n2ZXaCVu93Z0g400EyOVrNr74XYLfFHqSE5Uw2pD+SEzFQTrnDuZTY28lfT0glLvYW0zdBVNiWQaTqAoMUo+n//D7gE5HCrGmLhapvRljAULzMSg+fkzbHb9uUVNfQiur7O+l67egegfnIJms6eaeHzx3dikxWdJuJUc+i0/QIBb0UiLwea8o/syOpYqscmwpeD2smGdA9Go+Cgr0kfRKKO/3QzEPOHgxMc3fxVLntR+mgyb4qfSIIMEtNQ/WdW2+AtyBoxSK5sERwPiaSLP3zVvF/sPs2DTDSvtAl5MlPorEu5P9hJeuK4RE8MlOFNsAzN/cTbXVFwkDSzKfprBA+wspcii+x84cp3PkDgRXUdXUMyJn28vRGcJI0NdgRwkLBlxnTHPk9ea5Xz6ieuhlX7qcwnDQW9illflKEXMmNqvQoJSl/mSL+AZg5T5fnfvitug2Nlc6eiYFhdzsQ5pxYZ/a7K0JMDbdHcYhB/eLPrFkPh2yB295mmKY5R3y9vN7BeTw6++UdyTgAlpCo8FplixvsV53xhfRMKob/KHSTZEV0GM0bY0vEjA=
   on:
     tags: true
     distributions: sdist bdist_wheel
