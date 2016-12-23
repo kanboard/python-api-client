@@ -1,6 +1,8 @@
 import json
 import base64
 
+from kanboard import exceptions
+
 try:
     from urllib import request as http
 except ImportError:
@@ -41,7 +43,7 @@ class Kanboard(object):
 
     def __getattr__(self, name):
         def function(*args, **kwargs):
-            return self.call(method=self._to_camel_case(name), **kwargs)
+            return self.execute(method=self._to_camel_case(name), **kwargs)
         return function
 
     @staticmethod
@@ -53,11 +55,27 @@ class Kanboard(object):
     def _parse_response(response):
         try:
             body = json.loads(response.decode())
+
+            if 'error' in body:
+                message = body.get('error').get('message')
+                raise exceptions.KanboardClientException(message)
+
             return body.get('result')
         except ValueError:
             return None
 
-    def call(self, method, **kwargs):
+    def _do_request(self, headers, body):
+        try:
+            request = http.Request(self._url,
+                                   headers=headers,
+                                   data=json.dumps(body).encode())
+
+            response = http.urlopen(request).read()
+        except Exception as e:
+            raise exceptions.KanboardClientException(str(e))
+        return self._parse_response(response)
+
+    def execute(self, method, **kwargs):
         """
         Call remote API procedure
 
@@ -85,8 +103,4 @@ class Kanboard(object):
             'Content-Type': 'application/json',
         }
 
-        request = http.Request(self._url,
-                               headers=headers,
-                               data=json.dumps(payload).encode())
-
-        return self._parse_response(http.urlopen(request).read())
+        return self._do_request(headers, payload)

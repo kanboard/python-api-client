@@ -1,0 +1,2 @@
+class KanboardClientException(Exception):
+    pass
