@@ -15,7 +15,7 @@ Installation
     pip install kanboard
 
 
-The library is compatible with Python 2 and Python 3.
+This library is compatible with Python 2.7 and Python 3.4 and 3.5.
 
 Examples
 ========
@@ -31,8 +31,8 @@ Create a new team project
 
     from kanboard import Kanboard
 
-    kb = Kanboard("http://localhost/jsonrpc.php", "jsonrpc", "your_api_token")
-    project_id = kb.create_project(name="My project")
+    kb = Kanboard('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
+    project_id = kb.create_project(name='My project')
 
 
 Authenticate as user
@@ -42,7 +42,7 @@ Authenticate as user
 
     from kanboard import Kanboard
 
-    kb = Kanboard("http://localhost/jsonrpc.php", "admin", "admin")
+    kb = Kanboard('http://localhost/jsonrpc.php', 'admin', 'admin')
     kb.get_my_projects()
 
 Create a new task
@@ -52,8 +52,8 @@ Create a new task
 
     from kanboard import Kanboard
 
-    kb = Kanboard("http://localhost/jsonrpc.php", "jsonrpc", "your_api_token")
-    project_id = kb.create_project(name="My project")
-    task_id = kb.create_task(project_id=project_id, title="My task title")
+    kb = Kanboard('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
+    project_id = kb.create_project(name='My project')
+    task_id = kb.create_task(project_id=project_id, title='My task title')
 
-See the `official API documentation <http://kanboard.net/documentation/api-json-rpc>`_ for the complete list of methods and arguments.
+See the `official API documentation <https://kanboard.net/documentation/api-json-rpc>`_ for the complete list of methods and arguments.

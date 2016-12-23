@@ -2,9 +2,9 @@ import json
 import base64
 
 try:
-    from urllib.request import Request, urlopen
+    from urllib import request as http
 except ImportError:
-    from urllib2 import Request, urlopen
+    import urllib2 as http
 
 
 class Kanboard(object):
@@ -15,12 +15,15 @@ class Kanboard(object):
 
         from kanboard import Kanboard
 
-        kb = Kanboard("http://localhost/jsonrpc.php", "jsonrpc", "your_api_token")
+        kb = Kanboard(url="http://localhost/jsonrpc.php",
+                      username="jsonrpc",
+                      password="your_api_token")
+
         project_id = kb.create_project(name="My project")
 
     """
 
-    def __init__(self, url, username, password, auth_header="Authorization"):
+    def __init__(self, url, username, password, auth_header='Authorization'):
         """
         Constructor
 
@@ -31,32 +34,28 @@ class Kanboard(object):
             auth_header: API HTTP header
 
         """
-        self.url = url
-        self.username = username
-        self.password = password
-        self.auth_header = auth_header
+        self._url = url
+        self._username = username
+        self._password = password
+        self._auth_header = auth_header
 
     def __getattr__(self, name):
-        """
-        Call dynamically the API procedure
-
-        Arg:
-            name: method name
-        """
         def function(*args, **kwargs):
             return self.call(method=self._to_camel_case(name), **kwargs)
         return function
 
-    def _to_camel_case(self, snake_str):
+    @staticmethod
+    def _to_camel_case(snake_str):
         components = snake_str.split('_')
-        return components[0] + "".join(x.title() for x in components[1:])
+        return components[0] + ''.join(x.title() for x in components[1:])
 
-    def _parse_response(self, response):
+    @staticmethod
+    def _parse_response(response):
         try:
-            body = json.loads(response.read().decode('utf8'))
-            return body.get("result")
-        except:
-            return False
+            body = json.loads(response.decode())
+            return body.get('result')
+        except ValueError:
+            return None
 
     def call(self, method, **kwargs):
         """
@@ -74,17 +73,20 @@ class Kanboard(object):
             urllib.error.HTTPError: Any HTTP error (Python 3)
         """
         payload = {
-            "id": 1,
-            "jsonrpc": "2.0",
-            "method": method,
-            "params": kwargs
+            'id': 1,
+            'jsonrpc': '2.0',
+            'method': method,
+            'params': kwargs
         }
 
-        credentials = "{0}:{1}".format(self.username, self.password).encode()
+        credentials = base64.b64encode('{}:{}'.format(self._username, self._password).encode())
         headers = {
-            self.auth_header: b"Basic " + base64.b64encode(credentials),
-            "Content-Type": 'application/json'
+            self._auth_header: 'Basic {}'.format(credentials.decode()),
+            'Content-Type': 'application/json',
         }
 
-        request = Request(self.url, headers=headers, data=json.dumps(payload).encode("utf8"))
-        return self._parse_response(urlopen(request))
+        request = http.Request(self._url,
+                               headers=headers,
+                               data=json.dumps(payload).encode())
+
+        return self._parse_response(http.urlopen(request).read())

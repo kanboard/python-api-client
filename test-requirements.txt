@@ -1,0 +1,4 @@
+flake8>=2.5.4,<2.6.0  # MIT
+mock>=2.0  # BSD
+nose  # LGPL
+pep8==1.5.7  # MIT
