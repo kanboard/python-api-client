@@ -2,8 +2,8 @@
 Python API Client for Kanboard
 ==============================
 
-.. image:: https://travis-ci.org/kanboard/kanboard-api-python.svg?branch=master
-    :target: https://travis-ci.org/kanboard/kanboard-api-python
+.. image:: https://travis-ci.org/kanboard/python-api-client.svg?branch=master
+    :target: https://travis-ci.org/kanboard/python-api-client
 
 Minimalist Kanboard Python client.
 
@@ -23,7 +23,7 @@ This library is compatible with Python 2.7, Python 3.4 and 3.5.
 Examples
 ========
 
-The methods and arguments are the same as the JSON-RPC procedures described in the `official documentation <http://kanboard.net/documentation/api-json-rpc>`_.
+Methods and arguments are the same as the JSON-RPC procedures described in the `official documentation <https://kanboard.net/documentation/api-json-rpc>`_.
 
 Python methods are dynamically mapped to the API procedures. You must use named arguments.
 

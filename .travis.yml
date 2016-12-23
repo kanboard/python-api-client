@@ -15,4 +15,4 @@ deploy:
   on:
     tags: true
     distributions: sdist bdist_wheel
-    repo: kanboard/kanboard-api-python
+    repo: kanboard/python-api-client
