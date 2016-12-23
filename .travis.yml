@@ -1,10 +1,20 @@
 language: python
 
 python:
-  - "3.5"
+  - '3.5'
 
 install:
   - pip install tox
 
 script:
   - tox
+
+deploy:
+  provider: pypi
+  user: fguillot
+  password:
+    secure: cK52BI4mg1mLCjFCS/oUZ1p76VKWxAgX0tJImzf68twxs78m8gNQIxuT9g/pvD3liF9q1wM9s2U6t53me+lUL0lsPvhfaOrp2/6dRQ3s81BEtwGokQS98Ty0Lk5YG3Qb9U5lPLwJCdc6nnp6k9/Rz9tntiSYHEH1MmYSYKHJ6xoLv7qfMMuTIdgf2ry+/t9U816nE+YUWdxAJ84Ilb5hr8btSqqWnYX01Mb3uJeXi0wBqKjVl+d1qLPAV/+OgvnbJa+9C9/pJ3MCe0bMyfutW+slBbXLn2herqRFW3FgOEh9pS4kjtJu74N91KAZrWglI0R6qbSGaWF6+K6kwGnGkb3jBYy+6vX/TMa5IZkXfw8HDSGo/OuFuFRNHyRTrnUMrXXPYV7Sx21mosYo9u+CMbbnT5bgtK1X4cW+g9cl4gTp9F6Qcj+GOB4MPvB+jiwkJMl2lF1qyuFmUBYeqwzLtT80Bt+YzpBTSKujC1svKdiss0hjuXJKljN2VMi/3K1jS7jm/wR9tn9OtV8Kl4PHZ5gGvNeXblij2oosTWbGQ19MW8TNDmAKdrgp9lK85qvzyZ8+RWpZMkasx9P5QF6w+UVGzZuwObhevwxCJaoFmJSxttjO7a8b/yIC815nK7hCxU+9cNmmJWPw0V5/96jGbnUmySQTc9ZCPNvd1RLi134=
+  on:
+    tags: true
+    distributions: sdist bdist_wheel
+    repo: kanboard/kanboard-api-python
