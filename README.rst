@@ -18,7 +18,7 @@ Installation
     pip install kanboard
 
 
-This library is compatible with Python 2.7 and Python 3.4 and 3.5.
+This library is compatible with Python 2.7, Python 3.4 and 3.5.
 
 Examples
 ========
