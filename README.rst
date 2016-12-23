@@ -2,6 +2,9 @@
 Python API Client for Kanboard
 ==============================
 
+.. image:: https://travis-ci.org/kanboard/kanboard-api-python.svg?branch=master
+    :target: https://travis-ci.org/kanboard/kanboard-api-python
+
 Minimalist Kanboard Python client.
 
 - Author: Frédéric Guillot
