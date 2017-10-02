@@ -47,7 +47,7 @@ class Kanboard(object):
 
     """
 
-    def __init__(self, url, username, password, auth_header='Authorization'):
+    def __init__(self, url, username, password, auth_header='Authorization', cafile=None):
         """
         Constructor
 
@@ -62,6 +62,7 @@ class Kanboard(object):
         self._username = username
         self._password = password
         self._auth_header = auth_header
+        self._cafile = cafile
 
     def __getattr__(self, name):
         def function(*args, **kwargs):
@@ -91,8 +92,11 @@ class Kanboard(object):
             request = http.Request(self._url,
                                    headers=headers,
                                    data=json.dumps(body).encode())
-
-            response = http.urlopen(request).read()
+            if self._cafile:
+                response = http.urlopen(request, cafile=self._cafile).read()
+            else:
+                response = http.urlopen(request).read()
+                
         except Exception as e:
             raise exceptions.KanboardClientException(str(e))
         return self._parse_response(response)
