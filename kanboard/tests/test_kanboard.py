@@ -43,6 +43,15 @@ class TestKanboard(unittest.TestCase):
                                              data=mock.ANY,
                                              headers=mock.ANY)
 
+    def test_custom_auth_header(self):
+        self.client._auth_header = 'X-Auth-Header'
+        body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
+        self.urlopen.return_value.read.return_value = body
+        self.assertEquals(True, self.client.remote_procedure())
+        self.request.assert_called_once()
+        _, kwargs = self.request.call_args
+        assert kwargs['headers']['X-Auth-Header'] == 'dXNlcm5hbWU6cGFzc3dvcmQ='
+
     def test_http_error(self):
         self.urlopen.side_effect = Exception()
         with self.assertRaises(exceptions.KanboardClientException):

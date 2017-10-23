@@ -31,6 +31,9 @@ except ImportError:
     import urllib2 as http
 
 
+DEFAULT_AUTH_HEADER = 'Authorization'
+
+
 class Kanboard(object):
     """
     Kanboard API client
@@ -47,7 +50,7 @@ class Kanboard(object):
 
     """
 
-    def __init__(self, url, username, password, auth_header='Authorization'):
+    def __init__(self, url, username, password, auth_header=DEFAULT_AUTH_HEADER):
         """
         Constructor
 
@@ -120,8 +123,9 @@ class Kanboard(object):
         }
 
         credentials = base64.b64encode('{}:{}'.format(self._username, self._password).encode())
+        auth_header_prefix = 'Basic ' if self._auth_header == DEFAULT_AUTH_HEADER else ''
         headers = {
-            self._auth_header: 'Basic {}'.format(credentials.decode()),
+            self._auth_header: auth_header_prefix + credentials.decode(),
             'Content-Type': 'application/json',
         }
 
