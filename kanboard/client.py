@@ -99,7 +99,6 @@ class Kanboard(object):
                 response = http.urlopen(request, cafile=self._cafile).read()
             else:
                 response = http.urlopen(request).read()
-                
         except Exception as e:
             raise exceptions.KanboardClientException(str(e))
         return self._parse_response(response)
