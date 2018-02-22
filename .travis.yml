@@ -7,12 +7,3 @@ install:
   - pip install tox
 script:
   - tox
-deploy:
-  provider: pypi
-  user: fguillot
-  password:
-    secure: d9LwxCuaY/gpaGtFBbtL+Fya2Bw7o2HGw8jUTqOJwGdMCpWgnKk7HwBb0p9Xehu+xsaqhV3+z36OHpyESNQBgJMb78J8eyGbuNRrIxB+Lo6PRExHhq+n2ZXaCVu93Z0g400EyOVrNr74XYLfFHqSE5Uw2pD+SEzFQTrnDuZTY28lfT0glLvYW0zdBVNiWQaTqAoMUo+n//D7gE5HCrGmLhapvRljAULzMSg+fkzbHb9uUVNfQiur7O+l67egegfnIJms6eaeHzx3dikxWdJuJUc+i0/QIBb0UiLwea8o/syOpYqscmwpeD2smGdA9Go+Cgr0kfRKKO/3QzEPOHgxMc3fxVLntR+mgyb4qfSIIMEtNQ/WdW2+AtyBoxSK5sERwPiaSLP3zVvF/sPs2DTDSvtAl5MlPorEu5P9hJeuK4RE8MlOFNsAzN/cTbXVFwkDSzKfprBA+wspcii+x84cp3PkDgRXUdXUMyJn28vRGcJI0NdgRwkLBlxnTHPk9ea5Xz6ieuhlX7qcwnDQW9illflKEXMmNqvQoJSl/mSL+AZg5T5fnfvitug2Nlc6eiYFhdzsQ5pxYZ/a7K0JMDbdHcYhB/eLPrFkPh2yB295mmKY5R3y9vN7BeTw6++UdyTgAlpCo8FplixvsV53xhfRMKob/KHSTZEV0GM0bY0vEjA=
-  on:
-    tags: true
-    distributions: sdist bdist_wheel
-    repo: kanboard/python-api-client
