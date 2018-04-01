@@ -23,7 +23,7 @@ This library is compatible with Python 2.7, Python 3.4 and 3.5.
 Examples
 ========
 
-Methods and arguments are the same as the JSON-RPC procedures described in the `official documentation <https://kanboard.net/documentation/api-json-rpc>`_.
+Methods and arguments are the same as the JSON-RPC procedures described in the `official documentation <https://docs.kanboard.org/en/latest/api/index.html>`_.
 
 Python methods are dynamically mapped to the API procedures. You must use named arguments.
 
@@ -59,4 +59,4 @@ Create a new task
     project_id = kb.create_project(name='My project')
     task_id = kb.create_task(project_id=project_id, title='My task title')
 
-See the `official API documentation <https://kanboard.net/documentation/api-json-rpc>`_ for the complete list of methods and arguments.
+See the `official API documentation <https://docs.kanboard.org/en/latest/api/index.html>`_ for the complete list of methods and arguments.
