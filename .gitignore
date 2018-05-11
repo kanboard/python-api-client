@@ -4,5 +4,4 @@
 *.eggs
 dist
 build
-AUTHORS
-ChangeLog
+MANIFEST

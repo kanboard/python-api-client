@@ -5,7 +5,7 @@ Python API Client for Kanboard
 .. image:: https://travis-ci.org/kanboard/python-api-client.svg?branch=master
     :target: https://travis-ci.org/kanboard/python-api-client
 
-Minimalist Kanboard Python client.
+Kanboard API client.
 
 - Author: Frédéric Guillot
 - License: MIT
