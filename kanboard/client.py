@@ -80,7 +80,7 @@ class Kanboard(object):
     @staticmethod
     def _parse_response(response):
         try:
-            body = json.loads(response.decode())
+            body = json.loads(response.decode(errors='ignore'))
 
             if 'error' in body:
                 message = body.get('error').get('message')
