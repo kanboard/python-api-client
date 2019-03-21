@@ -38,7 +38,7 @@ setup(
     author_email='fred@kanboard.net',
     license='MIT',
     packages=['kanboard'],
-    classifiers=(
+    classifiers=[
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
         'Natural Language :: English',
@@ -48,5 +48,5 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
-    ),
+    ]
 )
