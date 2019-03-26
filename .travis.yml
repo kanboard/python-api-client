@@ -1,13 +1,23 @@
-language: python
-
-sudo: false
-
 notifications:
   email: false
 
+language: python
+
 python:
+  - '2.7'
+  - '3.4'
   - '3.5'
+  - '3.6'
+
+matrix:
+  include:
+    - python: '3.7'
+      dist: xenial
+      sudo: true
+
 install:
-  - pip install tox
+  - pip install -r test-requirements.txt
+
 script:
-  - tox
+  - python setup.py test
+  - flake8 --ignore E125,E123,E129 --max-line-length 120 --exclude kanboard/__init__.py kanboard/ tests/

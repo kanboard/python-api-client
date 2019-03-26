@@ -5,7 +5,7 @@ Python API Client for Kanboard
 .. image:: https://travis-ci.org/kanboard/python-api-client.svg?branch=master
     :target: https://travis-ci.org/kanboard/python-api-client
 
-Kanboard API client.
+Client library for Kanboard API.
 
 - Author: Frédéric Guillot
 - License: MIT
@@ -18,7 +18,7 @@ Installation
     pip install kanboard
 
 
-This library is compatible with Python 2.7, 3.4, 3.5 and 3.6.
+This library is compatible with Python 2.7, 3.4, 3.5, 3.6, and 3.7.
 
 Examples
 ========
