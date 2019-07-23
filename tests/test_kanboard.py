@@ -20,9 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import mock
-import sys
+import asynctest
+import types
+import warnings
 import unittest
+from unittest import mock
 
 from kanboard import client
 from kanboard import exceptions
@@ -31,46 +33,75 @@ from kanboard import exceptions
 class TestKanboard(unittest.TestCase):
 
     def setUp(self):
-        self.url = 'some api url'
+        self.url = 'http://someapiurl'
         self.client = client.Kanboard(self.url, 'username', 'password')
-        self.request, self.urlopen = self._create_mocks()
 
-    def test_api_call(self):
-        body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
-        self.urlopen.return_value.read.return_value = body
-        self.assertEquals(True, self.client.remote_procedure())
-        self.request.assert_called_once_with(self.url,
-                                             data=mock.ANY,
-                                             headers=mock.ANY)
+    # https://blog.sneawo.com/blog/2019/05/22/mock-aiohttp-request-in-unittests
+    def set_post_mock_response(self, mock_post, status, json_data):
+        mock_post.return_value.__aenter__.return_value.status = status
+        mock_post.return_value.__aenter__.return_value.json = asynctest.CoroutineMock(return_value=json_data)
 
-    def test_custom_auth_header(self):
+    def ignore_warnings(test_func):
+        def do_test(self, *args, **kwargs):
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                test_func(self, *args, **kwargs)
+        return do_test
+
+    @asynctest.patch("aiohttp.ClientSession.post")
+    def test_api_call(self, mock_post):
+        body = {"jsonrpc": "2.0", "result": True, "id": 123}
+        self.set_post_mock_response(mock_post, 200, body)
+        result = self.client.remote_procedure()
+        self.assertEqual(True, result)
+        mock_post.assert_called_once_with(self.url,
+                                          data=mock.ANY,
+                                          headers=mock.ANY,
+                                          ssl=mock.ANY)
+
+    @asynctest.patch("aiohttp.ClientSession.post")
+    def test_custom_auth_header(self, mock_post):
         self.client._auth_header = 'X-Auth-Header'
-        body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
-        self.urlopen.return_value.read.return_value = body
-        self.assertEquals(True, self.client.remote_procedure())
-        self.request.assert_called_once()
-        _, kwargs = self.request.call_args
+        body = {"jsonrpc": "2.0", "result": True, "id": 123}
+        self.set_post_mock_response(mock_post, 200, body)
+        self.assertEqual(True, self.client.remote_procedure())
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
         assert kwargs['headers']['X-Auth-Header'] == 'dXNlcm5hbWU6cGFzc3dvcmQ='
 
-    def test_http_error(self):
-        self.urlopen.side_effect = Exception()
+    @asynctest.patch("aiohttp.ClientSession.post")
+    def test_http_error(self, mock_post):
+        mock_post.side_effect = Exception()
         with self.assertRaises(exceptions.KanboardClientException):
             self.client.remote_procedure()
 
-    def test_application_error(self):
-        body = b'{"jsonrpc": "2.0", "error": {"code": -32603, "message": "Internal error"}, "id": 123}'
-        self.urlopen.return_value.read.return_value = body
+    @asynctest.patch("aiohttp.ClientSession.post")
+    def test_application_error(self, mock_post):
+        body = {"jsonrpc": "2.0", "error": {"code": -32603, "message": "Internal error"}, "id": 123}
+        self.set_post_mock_response(mock_post, 200, body)
 
         with self.assertRaises(exceptions.KanboardClientException, msg='Internal error'):
             self.client.remote_procedure()
 
-    @staticmethod
-    def _create_mocks():
-        if sys.version_info[0] < 3:
-            urlopen_patcher = mock.patch('urllib2.urlopen')
-            request_patcher = mock.patch('urllib2.Request')
-        else:
-            request_patcher = mock.patch('urllib.request.Request')
-            urlopen_patcher = mock.patch('urllib.request.urlopen')
+    def test_async_method_call_recognised(self):
+        method_name = "some_method_async"
+        result = self.client.is_async_method_name(method_name)
+        self.assertTrue(result)
 
-        return request_patcher.start(), urlopen_patcher.start()
+    def test_standard_method_call_recognised(self):
+        method_name = "some_method"
+        result = self.client.is_async_method_name(method_name)
+        self.assertFalse(result)
+
+    def test_method_name_extracted_from_async_name(self):
+        expected_method_name = "some_method"
+        async_method_name = expected_method_name + "_async"
+        result = self.client.get_funcname_from_async_name(async_method_name)
+        self.assertEqual(expected_method_name, result)
+
+    # suppress a RuntimeWarning because coro is not awaited
+    # this is done on purpose
+    @ignore_warnings
+    def test_async_call_generates_coro(self):
+        method = self.client.my_method_async()
+        self.assertIsInstance(method, types.CoroutineType)

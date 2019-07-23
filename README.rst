@@ -18,7 +18,7 @@ Installation
     pip install kanboard
 
 
-This library is compatible with Python 2.7, 3.4, 3.5, 3.6, and 3.7.
+This library is compatible with Python 3.5, 3.6, and 3.7.
 
 Examples
 ========
@@ -26,6 +26,8 @@ Examples
 Methods and arguments are the same as the JSON-RPC procedures described in the `official documentation <https://docs.kanboard.org/en/latest/api/index.html>`_.
 
 Python methods are dynamically mapped to the API procedures. You must use named arguments.
+
+By default, the calls are made synchronously, meaning that they will block the program until completed.
 
 Create a new team project
 -------------------------
@@ -58,5 +60,34 @@ Create a new task
     kb = Kanboard('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
     project_id = kb.create_project(name='My project')
     task_id = kb.create_task(project_id=project_id, title='My task title')
+
+Asynchronous I/O
+================
+
+The client also exposes async/await style method calls. Similarly to the synchronous calls (see above), the method names are mapped to the API methods.
+To invoke an asynchronous call, the method name must be appended with `_async`: for example, a synchronous call to `create_project` can be made asynchronous by calling `create_project_async` instead.
+
+.. code-block:: python
+
+    import asyncio
+    from kanboard import Kanboard
+
+    kb = Kanboard('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
+
+    loop = asyncio.get_event_loop()
+    project_id = ploop.run_until_complete(kb.create_project_async(name='My project'))
+
+
+.. code-block:: python
+
+    import asyncio
+    from kanboard import Kanboard
+
+    async def call_within_function()
+      kb = Kanboard('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
+      return await kb.create_project_async(name='My project')
+
+    loop = asyncio.get_event_loop()
+    project_id = loop.run_until_complete(call_within_function())
 
 See the `official API documentation <https://docs.kanboard.org/en/latest/api/index.html>`_ for the complete list of methods and arguments.

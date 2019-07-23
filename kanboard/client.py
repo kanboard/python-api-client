@@ -22,16 +22,15 @@
 
 import json
 import base64
+import aiohttp
+import asyncio
+import ssl
 
 from kanboard import exceptions
 
-try:
-    from urllib import request as http
-except ImportError:
-    import urllib2 as http
-
 
 DEFAULT_AUTH_HEADER = 'Authorization'
+ASYNC_FUNCNAME_MARKER = "_async"
 
 
 class Kanboard(object):
@@ -50,7 +49,7 @@ class Kanboard(object):
 
     """
 
-    def __init__(self, url, username, password, auth_header=DEFAULT_AUTH_HEADER, cafile=None):
+    def __init__(self, url, username, password, auth_header=DEFAULT_AUTH_HEADER, cafile=None, loop=asyncio.get_event_loop()):
         """
         Constructor
 
@@ -59,6 +58,8 @@ class Kanboard(object):
             username: API username or real username
             password: API token or user password
             auth_header: API HTTP header
+            cafile: path to a custom CA certificate
+            loop: an asyncio event loop. Default: asyncio.get_event_loop()
 
         """
         self._url = url
@@ -66,11 +67,25 @@ class Kanboard(object):
         self._password = password
         self._auth_header = auth_header
         self._cafile = cafile
+        self._event_loop = loop
 
     def __getattr__(self, name):
-        def function(*args, **kwargs):
-            return self.execute(method=self._to_camel_case(name), **kwargs)
-        return function
+        if(self.is_async_method_name(name)):
+            async def function(*args, **kwargs):
+                return await self.execute(method=self._to_camel_case(self.get_funcname_from_async_name(name)), **kwargs)
+            return function
+        else:
+            def function(*args, **kwargs):
+                return self._event_loop.run_until_complete(self.execute(method=self._to_camel_case(name), **kwargs))
+            return function
+
+    @staticmethod
+    def is_async_method_name(funcname):
+        return funcname.endswith(ASYNC_FUNCNAME_MARKER)
+
+    @staticmethod
+    def get_funcname_from_async_name(funcname):
+        return funcname[:len(funcname)-len(ASYNC_FUNCNAME_MARKER)]
 
     @staticmethod
     def _to_camel_case(snake_str):
@@ -80,7 +95,7 @@ class Kanboard(object):
     @staticmethod
     def _parse_response(response):
         try:
-            body = json.loads(response.decode(errors='ignore'))
+            body = response
 
             if 'error' in body:
                 message = body.get('error').get('message')
@@ -90,20 +105,24 @@ class Kanboard(object):
         except ValueError:
             return None
 
-    def _do_request(self, headers, body):
+    async def _do_request(self, headers, body):
         try:
-            request = http.Request(self._url,
-                                   headers=headers,
-                                   data=json.dumps(body).encode())
-            if self._cafile:
-                response = http.urlopen(request, cafile=self._cafile).read()
-            else:
-                response = http.urlopen(request).read()
+            ssl_context = ssl.create_default_context(cafile=self._cafile)
+            # This creates a per-request ClientSession,
+            # against the recommendations of the aiohttp authors.
+            # It's a pragmatic choice wrt how the code was before introducing
+            # asynchronous calls, in that it doesn't make performance worse.
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                        self._url,
+                        headers=headers,
+                        data=json.dumps(body).encode(),
+                        ssl=ssl_context) as response:
+                    return self._parse_response(await response.json())
         except Exception as e:
             raise exceptions.KanboardClientException(str(e))
-        return self._parse_response(response)
 
-    def execute(self, method, **kwargs):
+    async def execute(self, method, **kwargs):
         """
         Call remote API procedure
 
@@ -132,4 +151,4 @@ class Kanboard(object):
             'Content-Type': 'application/json',
         }
 
-        return self._do_request(headers, payload)
+        return await self._do_request(headers, payload)
