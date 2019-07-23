@@ -91,7 +91,7 @@ class Kanboard(object):
 
     @staticmethod
     def get_funcname_from_async_name(funcname):
-        return funcname[:len(funcname)-len(ASYNC_FUNCNAME_MARKER)]
+        return funcname[:len(funcname) - len(ASYNC_FUNCNAME_MARKER)]
 
     @staticmethod
     def _to_camel_case(snake_str):
