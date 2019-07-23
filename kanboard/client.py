@@ -49,7 +49,13 @@ class Kanboard(object):
 
     """
 
-    def __init__(self, url, username, password, auth_header=DEFAULT_AUTH_HEADER, cafile=None, loop=asyncio.get_event_loop()):
+    def __init__(self,
+                 url,
+                 username,
+                 password,
+                 auth_header=DEFAULT_AUTH_HEADER,
+                 cafile=None,
+                 loop=asyncio.get_event_loop()):
         """
         Constructor
 
