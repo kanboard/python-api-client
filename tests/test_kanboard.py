@@ -24,7 +24,7 @@ import asynctest
 import types
 import warnings
 import unittest
-from unittest import mock
+import mock
 
 from kanboard import client
 from kanboard import exceptions
