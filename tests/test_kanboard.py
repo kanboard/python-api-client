@@ -24,7 +24,7 @@ import asynctest
 import types
 import warnings
 import unittest
-import mock
+from unittest import mock
 
 from kanboard import client
 from kanboard import exceptions
@@ -65,7 +65,10 @@ class TestKanboard(unittest.TestCase):
         body = {"jsonrpc": "2.0", "result": True, "id": 123}
         self.set_post_mock_response(mock_post, 200, body)
         self.assertEqual(True, self.client.remote_procedure())
-        mock_post.assert_called_once()
+        mock_post.assert_called_once_with(self.url,
+                                          data=mock.ANY,
+                                          headers=mock.ANY,
+                                          ssl=mock.ANY)
         _, kwargs = mock_post.call_args
         assert kwargs['headers']['X-Auth-Header'] == 'dXNlcm5hbWU6cGFzc3dvcmQ='
 
