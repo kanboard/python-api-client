@@ -32,7 +32,7 @@ def readme():
 
 setup(
     name='kanboard',
-    version='1.0.7',
+    version='1.1.0',
     description='Client library for Kanboard API',
     long_description=readme(),
     keywords='kanboard api client',
@@ -47,8 +47,6 @@ setup(
         'Natural Language :: English',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

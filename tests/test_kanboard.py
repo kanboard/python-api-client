@@ -20,9 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import mock
-import sys
 import unittest
+from unittest import mock
+import types
+import warnings
 
 from kanboard import client
 from kanboard import exceptions
@@ -35,10 +36,17 @@ class TestKanboard(unittest.TestCase):
         self.client = client.Kanboard(self.url, 'username', 'password')
         self.request, self.urlopen = self._create_mocks()
 
+    def ignore_warnings(test_func):
+        def do_test(self, *args, **kwargs):
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                test_func(self, *args, **kwargs)
+        return do_test
+
     def test_api_call(self):
         body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
         self.urlopen.return_value.read.return_value = body
-        self.assertEquals(True, self.client.remote_procedure())
+        self.assertEqual(True, self.client.remote_procedure())
         self.request.assert_called_once_with(self.url,
                                              data=mock.ANY,
                                              headers=mock.ANY)
@@ -47,8 +55,10 @@ class TestKanboard(unittest.TestCase):
         self.client._auth_header = 'X-Auth-Header'
         body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
         self.urlopen.return_value.read.return_value = body
-        self.assertEquals(True, self.client.remote_procedure())
-        self.request.assert_called_once()
+        self.assertEqual(True, self.client.remote_procedure())
+        self.request.assert_called_once_with(self.url,
+                                             data=mock.ANY,
+                                             headers=mock.ANY)
         _, kwargs = self.request.call_args
         assert kwargs['headers']['X-Auth-Header'] == 'dXNlcm5hbWU6cGFzc3dvcmQ='
 
@@ -64,13 +74,31 @@ class TestKanboard(unittest.TestCase):
         with self.assertRaises(exceptions.KanboardClientException, msg='Internal error'):
             self.client.remote_procedure()
 
+    def test_async_method_call_recognised(self):
+        method_name = "some_method_async"
+        result = self.client.is_async_method_name(method_name)
+        self.assertTrue(result)
+
+    def test_standard_method_call_recognised(self):
+        method_name = "some_method"
+        result = self.client.is_async_method_name(method_name)
+        self.assertFalse(result)
+
+    def test_method_name_extracted_from_async_name(self):
+        expected_method_name = "some_method"
+        async_method_name = expected_method_name + "_async"
+        result = self.client.get_funcname_from_async_name(async_method_name)
+        self.assertEqual(expected_method_name, result)
+
+    # suppress a RuntimeWarning because coro is not awaited
+    # this is done on purpose
+    @ignore_warnings
+    def test_async_call_generates_coro(self):
+        method = self.client.my_method_async()
+        self.assertIsInstance(method, types.CoroutineType)
+
     @staticmethod
     def _create_mocks():
-        if sys.version_info[0] < 3:
-            urlopen_patcher = mock.patch('urllib2.urlopen')
-            request_patcher = mock.patch('urllib2.Request')
-        else:
-            request_patcher = mock.patch('urllib.request.Request')
-            urlopen_patcher = mock.patch('urllib.request.urlopen')
-
+        request_patcher = mock.patch('urllib.request.Request')
+        urlopen_patcher = mock.patch('urllib.request.urlopen')
         return request_patcher.start(), urlopen_patcher.start()
