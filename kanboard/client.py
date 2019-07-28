@@ -22,16 +22,15 @@
 
 import json
 import base64
+import functools
+import asyncio
 
 from kanboard import exceptions
-
-try:
-    from urllib import request as http
-except ImportError:
-    import urllib2 as http
+from urllib import request as http
 
 
 DEFAULT_AUTH_HEADER = 'Authorization'
+ASYNC_FUNCNAME_MARKER = "_async"
 
 
 class Kanboard(object):
@@ -50,7 +49,13 @@ class Kanboard(object):
 
     """
 
-    def __init__(self, url, username, password, auth_header=DEFAULT_AUTH_HEADER, cafile=None):
+    def __init__(self,
+                 url,
+                 username,
+                 password,
+                 auth_header=DEFAULT_AUTH_HEADER,
+                 cafile=None,
+                 loop=asyncio.get_event_loop()):
         """
         Constructor
 
@@ -59,18 +64,35 @@ class Kanboard(object):
             username: API username or real username
             password: API token or user password
             auth_header: API HTTP header
-
+            cafile: path to a custom CA certificate
+            loop: an asyncio event loop. Default: asyncio.get_event_loop()
         """
         self._url = url
         self._username = username
         self._password = password
         self._auth_header = auth_header
         self._cafile = cafile
+        self._event_loop = loop
 
     def __getattr__(self, name):
-        def function(*args, **kwargs):
-            return self.execute(method=self._to_camel_case(name), **kwargs)
-        return function
+        if(self.is_async_method_name(name)):
+            async def function(*args, **kwargs):
+                return await self._event_loop.run_in_executor(
+                    None,
+                    functools.partial(self.execute, method=self._to_camel_case(self.get_funcname_from_async_name(name)), **kwargs))
+            return function
+        else:
+            def function(*args, **kwargs):
+                return self.execute(method=self._to_camel_case(name), **kwargs)
+            return function
+
+    @staticmethod
+    def is_async_method_name(funcname):
+        return funcname.endswith(ASYNC_FUNCNAME_MARKER)
+
+    @staticmethod
+    def get_funcname_from_async_name(funcname):
+        return funcname[:len(funcname) - len(ASYNC_FUNCNAME_MARKER)]
 
     @staticmethod
     def _to_camel_case(snake_str):
