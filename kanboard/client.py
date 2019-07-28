@@ -79,7 +79,9 @@ class Kanboard(object):
             async def function(*args, **kwargs):
                 return await self._event_loop.run_in_executor(
                     None,
-                    functools.partial(self.execute, method=self._to_camel_case(self.get_funcname_from_async_name(name)), **kwargs))
+                    functools.partial(
+                        self.execute,
+                        method=self._to_camel_case(self.get_funcname_from_async_name(name)), **kwargs))
             return function
         else:
             def function(*args, **kwargs):
