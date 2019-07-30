@@ -13,9 +13,9 @@ matrix:
       dist: xenial
       sudo: true
 
-install:
-  - pip install -r test-requirements.txt
+before_install:
+  - pip install flake8
 
 script:
   - python setup.py test
-  - flake8 --ignore E125,E123,E129 --max-line-length 120 --exclude kanboard/__init__.py kanboard/ tests/
+  - flake8 --max-line-length 120 *.py

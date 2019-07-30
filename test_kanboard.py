@@ -25,15 +25,14 @@ from unittest import mock
 import types
 import warnings
 
-from kanboard import client
-from kanboard import exceptions
+import kanboard
 
 
-class TestKanboard(unittest.TestCase):
+class TestClient(unittest.TestCase):
 
     def setUp(self):
         self.url = 'some api url'
-        self.client = client.Kanboard(self.url, 'username', 'password')
+        self.client = kanboard.Client(self.url, 'username', 'password')
         self.request, self.urlopen = self._create_mocks()
 
     def ignore_warnings(test_func):
@@ -64,14 +63,14 @@ class TestKanboard(unittest.TestCase):
 
     def test_http_error(self):
         self.urlopen.side_effect = Exception()
-        with self.assertRaises(exceptions.KanboardClientException):
+        with self.assertRaises(kanboard.ClientError):
             self.client.remote_procedure()
 
     def test_application_error(self):
         body = b'{"jsonrpc": "2.0", "error": {"code": -32603, "message": "Internal error"}, "id": 123}'
         self.urlopen.return_value.read.return_value = body
 
-        with self.assertRaises(exceptions.KanboardClientException, msg='Internal error'):
+        with self.assertRaises(kanboard.ClientError, msg='Internal error'):
             self.client.remote_procedure()
 
     def test_async_method_call_recognised(self):
