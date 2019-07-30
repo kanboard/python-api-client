@@ -30,7 +30,7 @@ def readme():
 
 setup(
     name='kanboard',
-    version='1.1.0',
+    version='1.1.1',
     description='Client library for Kanboard API',
     long_description=readme(),
     keywords='kanboard api client',
@@ -38,7 +38,7 @@ setup(
     author='Frederic Guillot',
     author_email='fred@kanboard.net',
     license='MIT',
-    py_modules=['miniflux'],
+    py_modules=['kanboard'],
     test_suite='test_kanboard',
     classifiers=[
         'Intended Audience :: Developers',
