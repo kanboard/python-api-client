@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 #
-# Copyright (c) 2016-2018 Frederic Guillot
+# Copyright (c) 2016-2019 Frederic Guillot
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -24,8 +24,6 @@ import json
 import base64
 import functools
 import asyncio
-
-from kanboard import exceptions
 from urllib import request as http
 
 
@@ -33,17 +31,21 @@ DEFAULT_AUTH_HEADER = 'Authorization'
 ASYNC_FUNCNAME_MARKER = "_async"
 
 
-class Kanboard(object):
+class ClientError(Exception):
+    pass
+
+
+class Client:
     """
     Kanboard API client
 
     Example:
 
-        from kanboard import Kanboard
+        from kanboard import Client
 
-        kb = Kanboard(url="http://localhost/jsonrpc.php",
-                      username="jsonrpc",
-                      password="your_api_token")
+        kb = Client(url="http://localhost/jsonrpc.php",
+                    username="jsonrpc",
+                    password="your_api_token")
 
         project_id = kb.create_project(name="My project")
 
@@ -75,7 +77,7 @@ class Kanboard(object):
         self._event_loop = loop
 
     def __getattr__(self, name):
-        if(self.is_async_method_name(name)):
+        if self.is_async_method_name(name):
             async def function(*args, **kwargs):
                 return await self._event_loop.run_in_executor(
                     None,
@@ -108,7 +110,7 @@ class Kanboard(object):
 
             if 'error' in body:
                 message = body.get('error').get('message')
-                raise exceptions.KanboardClientException(message)
+                raise ClientError(message)
 
             return body.get('result')
         except ValueError:
@@ -124,7 +126,7 @@ class Kanboard(object):
             else:
                 response = http.urlopen(request).read()
         except Exception as e:
-            raise exceptions.KanboardClientException(str(e))
+            raise ClientError(str(e))
         return self._parse_response(response)
 
     def execute(self, method, **kwargs):
@@ -139,7 +141,6 @@ class Kanboard(object):
             Procedure result
 
         Raises:
-            urllib2.HTTPError: Any HTTP error (Python 2)
             urllib.error.HTTPError: Any HTTP error (Python 3)
         """
         payload = {

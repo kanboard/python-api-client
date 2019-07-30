@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 #
-# Copyright (c) 2016-2018 Frederic Guillot
+# Copyright (c) 2016-2019 Frederic Guillot
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,15 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-try:
-    from setuptools import setup
-except ImportError:
-    from distutils.core import setup
+from setuptools import setup
 
 
 def readme():
     with open('README.rst') as f:
         return f.read()
+
 
 setup(
     name='kanboard',
@@ -40,7 +38,8 @@ setup(
     author='Frederic Guillot',
     author_email='fred@kanboard.net',
     license='MIT',
-    packages=['kanboard'],
+    py_modules=['miniflux'],
+    test_suite='test_kanboard',
     classifiers=[
         'Intended Audience :: Developers',
         'Intended Audience :: Information Technology',
