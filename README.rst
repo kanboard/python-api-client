@@ -89,7 +89,7 @@ to ``create_project`` can be made asynchronous by calling ``create_project_async
     import asyncio
     import kanboard
 
-    async def call_within_function()
+    async def call_within_function():
         kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
         return await kb.create_project_async(name='My project')
 
