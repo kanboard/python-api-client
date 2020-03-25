@@ -57,7 +57,7 @@ class Client:
                  password,
                  auth_header=DEFAULT_AUTH_HEADER,
                  cafile=None,
-                 loop=asyncio.get_event_loop()):
+                 loop=None):
         """
         Constructor
 
@@ -74,7 +74,12 @@ class Client:
         self._password = password
         self._auth_header = auth_header
         self._cafile = cafile
-        self._event_loop = loop
+
+        if not loop:
+            try:
+                self._event_loop = asyncio.get_event_loop()
+            except RuntimeError:
+                self._event_loop = asyncio.new_event_loop()
 
     def __getattr__(self, name):
         if self.is_async_method_name(name):
