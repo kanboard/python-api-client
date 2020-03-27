@@ -17,7 +17,7 @@ Installation
 
 This library is compatible with Python >= 3.5.
 
-Note: **Support for Python 2.7 has been dropped from version 1.1.0.**
+Note: **Support for Python 2.7 has been dropped since version 1.1.0.**
 
 Examples
 ========
