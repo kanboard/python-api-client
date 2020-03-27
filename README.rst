@@ -2,9 +2,6 @@
 Python API Client for Kanboard
 ==============================
 
-.. image:: https://travis-ci.org/kanboard/python-api-client.svg?branch=master
-    :target: https://travis-ci.org/kanboard/python-api-client
-
 Client library for Kanboard API.
 
 - Author: Frédéric Guillot
