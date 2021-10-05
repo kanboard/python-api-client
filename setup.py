@@ -30,7 +30,7 @@ def readme():
 
 setup(
     name='kanboard',
-    version='1.1.2',
+    version='1.1.3',
     description='Client library for Kanboard',
     long_description=readme(),
     keywords='kanboard api client',
