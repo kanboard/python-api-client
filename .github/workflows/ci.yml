@@ -29,4 +29,4 @@ jobs:
         python setup.py test
     - name: PEP8
       run: |
-        flake8 --max-line-length 120 *.py
+        flake8 --max-line-length 120
