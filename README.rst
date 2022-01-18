@@ -19,6 +19,13 @@ This library is compatible with Python >= 3.5.
 
 Note: **Support for Python 2.7 has been dropped since version 1.1.0.**
 
+On Fedora (36 and later), you can install the package using DNF:
+
+.. code-block:: bash
+
+    dnf install python3-kanboard
+
+
 Examples
 ========
 
