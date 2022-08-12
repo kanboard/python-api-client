@@ -1,6 +1,6 @@
 # The MIT License (MIT)
 #
-# Copyright (c) 2016-2020 Frederic Guillot
+# Copyright (c) 2016-2022 Frederic Guillot
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -30,7 +30,7 @@ def readme():
 
 setup(
     name='kanboard',
-    version='1.1.3',
+    version='1.1.4',
     description='Client library for Kanboard',
     long_description=readme(),
     keywords='kanboard api client',
@@ -50,5 +50,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
     ]
 )
