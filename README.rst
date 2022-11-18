@@ -30,7 +30,7 @@ Examples
 ========
 
 Methods and arguments are the same as the JSON-RPC procedures described in the
-`official documentation <https://docs.kanboard.org/en/latest/api/index.html>`_.
+`official documentation <https://docs.kanboard.org/v1/api/>`_.
 
 Python methods are dynamically mapped to the API procedures. **You must use named arguments.**
 
@@ -101,5 +101,5 @@ to ``create_project`` can be made asynchronous by calling ``create_project_async
     project_id = loop.run_until_complete(call_within_function())
 
 
-See the `official API documentation <https://docs.kanboard.org/en/latest/api/index.html>`_ for the complete list of
+See the `official API documentation <https://docs.kanboard.org/v1/api/>`_ for the complete list of
 methods and arguments.
