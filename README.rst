@@ -12,7 +12,7 @@ Installation
 
 .. code-block:: bash
 
-    pip install kanboard
+    python3 -m pip install kanboard
 
 
 This library is compatible with Python >= 3.5.
@@ -32,7 +32,7 @@ Examples
 Methods and arguments are the same as the JSON-RPC procedures described in the
 `official documentation <https://docs.kanboard.org/v1/api/>`_.
 
-Python methods are dynamically mapped to the API procedures. **You must use named arguments.**
+Python methods are dynamically mapped to the API procedures: **You must use named arguments**.
 
 By default, calls are made synchronously, meaning that they will block the program until completed.
 
@@ -67,6 +67,49 @@ Create a new task
     kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
     project_id = kb.create_project(name='My project')
     task_id = kb.create_task(project_id=project_id, title='My task title')
+
+SSL connection and self-signed certificates
+===========================================
+
+Example with a valid certificate:
+
+.. code-block:: python
+
+    import kanboard
+
+    kb = kanboard.Client('https://example.org/jsonrpc.php', 'admin', 'secret')
+    kb.get_my_projects()
+
+Example with a custom certificate:
+
+.. code-block:: python
+
+    import kanboard
+
+    kb = kanboard.Client('https://example.org/jsonrpc.php', 'admin', 'secret', cafile='/path/to/my/cert.pem')
+    kb.get_my_projects()
+
+Example with a custom certificate and hostname mismatch:
+
+.. code-block:: python
+
+    import kanboard
+
+    kb = kanboard.Client(url='https://example.org/jsonrpc.php',
+                         username='admin',
+                         password='secret',
+                         cafile='/path/to/my/cert.pem',
+                         ignore_hostname_verification=True)
+    kb.get_my_projects()
+
+Ignore invalid/expired certificates and hostname mismatches, which will make your application vulnerable to man-in-the-middle (MitM) attacks:
+
+.. code-block:: python
+
+    import kanboard
+
+    kb = kanboard.Client('https://example.org/jsonrpc.php', 'admin', 'secret', insecure=True)
+    kb.get_my_projects()
 
 Asynchronous I/O
 ================
