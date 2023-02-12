@@ -68,6 +68,18 @@ Create a new task
     project_id = kb.create_project(name='My project')
     task_id = kb.create_task(project_id=project_id, title='My task title')
 
+Use a personalized user agent
+-----------------------------
+
+.. code-block:: python
+
+    import kanboard
+
+    kb = kanboard.Client(url='http://localhost/jsonrpc.php',
+                         username='admin',
+                         password='secret',
+                         user_agent='My Kanboard client')
+
 SSL connection and self-signed certificates
 ===========================================
 
@@ -86,7 +98,10 @@ Example with a custom certificate:
 
     import kanboard
 
-    kb = kanboard.Client('https://example.org/jsonrpc.php', 'admin', 'secret', cafile='/path/to/my/cert.pem')
+    kb = kanboard.Client(url='https://example.org/jsonrpc.php',
+                         username='admin',
+                         password='secret',
+                         cafile='/path/to/my/cert.pem')
     kb.get_my_projects()
 
 Example with a custom certificate and hostname mismatch:
@@ -108,7 +123,10 @@ Ignore invalid/expired certificates and hostname mismatches, which will make you
 
     import kanboard
 
-    kb = kanboard.Client('https://example.org/jsonrpc.php', 'admin', 'secret', insecure=True)
+    kb = kanboard.Client(url='https://example.org/jsonrpc.php',
+                         username='admin',
+                         password='secret',
+                         insecure=True)
     kb.get_my_projects()
 
 Asynchronous I/O

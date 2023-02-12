@@ -61,6 +61,7 @@ class Client:
                  cafile: Optional[str] = None,
                  insecure: bool = False,
                  ignore_hostname_verification: bool = False,
+                 user_agent: str = 'Kanboard Python API Client',
                  loop: Optional[asyncio.AbstractEventLoop] = None):
         """
         Constructor
@@ -73,6 +74,7 @@ class Client:
             cafile: Path to a custom CA certificate
             insecure: Ignore SSL certificate errors and ignore hostname mismatches
             ignore_hostname_verification: Ignore SSL certificate hostname verification
+            user_agent: Use a personalized user agent
             loop: An asyncio event loop. Default: asyncio.get_event_loop()
         """
         self._url = url
@@ -81,6 +83,7 @@ class Client:
         self._auth_header = auth_header
         self._cafile = cafile
         self._insecure = insecure
+        self._user_agent = user_agent
         self._ignore_hostname_verification = ignore_hostname_verification
 
         if not loop:
@@ -174,6 +177,7 @@ class Client:
         headers = {
             self._auth_header: auth_header_prefix + credentials.decode(),
             'Content-Type': 'application/json',
+            'User-Agent': self._user_agent,
         }
 
         return self._do_request(headers, payload)
