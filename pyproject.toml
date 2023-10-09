@@ -1,0 +1,33 @@
+[project]
+name = "kanboard"
+version = "1.1.5"
+description = "Client library for Kanboard"
+readme = "README.rst"
+requires-python = ">=3.7"
+license = {file = "LICENSE"}
+keywords = ["kanboard", "api", "client"]
+authors = [
+  { name = "Frédéric Guillot", email = "fred@kanboard.net" }
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3 :: Only",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/kanboard/python-api-client"
+"Bug Reports" = "https://github.com/kanboard/python-api-client/issues"
+"Source" = "https://github.com/kanboard/python-api-client"
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
