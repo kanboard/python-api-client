@@ -15,7 +15,7 @@ Installation
     python3 -m pip install kanboard
 
 
-This library is compatible with Python >= 3.5.
+This library is compatible with Python >= 3.7.
 
 Note: **Support for Python 2.7 has been dropped since version 1.1.0.**
 
