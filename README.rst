@@ -15,9 +15,9 @@ Installation
     python3 -m pip install kanboard
 
 
-This library is compatible with Python >= 3.7.
-
-Note: **Support for Python 2.7 has been dropped since version 1.1.0.**
+- This library is compatible with Python >= 3.9.
+- Python 2.7 is no longer supported since version 1.1.0.
+- Python 3.7 and 3.8 are no longer supported since version 1.1.7.
 
 On Fedora (36 and later), you can install the package using DNF:
 
