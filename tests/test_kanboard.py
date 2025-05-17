@@ -62,6 +62,19 @@ class TestClient(unittest.TestCase):
         with self.assertRaises(kanboard.ClientError):
             self.client.remote_procedure()
 
+    def test_empty_response_raises_client_error(self):
+        self.urlopen.return_value.read.return_value = b""
+        with self.assertRaises(kanboard.ClientError) as cm:
+            self.client.remote_procedure()
+        self.assertIn("Empty response", str(cm.exception))
+
+    def test_json_parsing_failure(self):
+        body = b"{invalid json}"
+        self.urlopen.return_value.read.return_value = body
+        with self.assertRaises(kanboard.ClientError) as cm:
+            self.client.remote_procedure()
+        self.assertIn("Failed to parse JSON response", str(cm.exception))
+
     def test_application_error(self):
         body = b'{"jsonrpc": "2.0", "error": {"code": -32603, "message": "Internal error"}, "id": 123}'
         self.urlopen.return_value.read.return_value = body
