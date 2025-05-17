@@ -29,10 +29,9 @@ import kanboard
 
 
 class TestClient(unittest.TestCase):
-
     def setUp(self):
-        self.url = 'some api url'
-        self.client = kanboard.Client(self.url, 'username', 'password')
+        self.url = "some api url"
+        self.client = kanboard.Client(self.url, "username", "password")
         self.request, self.urlopen = self._create_mocks()
 
     def ignore_warnings(test_func):
@@ -40,26 +39,23 @@ class TestClient(unittest.TestCase):
             with warnings.catch_warnings():
                 warnings.simplefilter("ignore")
                 test_func(self, *args, **kwargs)
+
         return do_test
 
     def test_api_call(self):
         body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
         self.urlopen.return_value.read.return_value = body
         self.assertEqual(True, self.client.remote_procedure())
-        self.request.assert_called_once_with(self.url,
-                                             data=mock.ANY,
-                                             headers=mock.ANY)
+        self.request.assert_called_once_with(self.url, data=mock.ANY, headers=mock.ANY)
 
     def test_custom_auth_header(self):
-        self.client._auth_header = 'X-Auth-Header'
+        self.client._auth_header = "X-Auth-Header"
         body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
         self.urlopen.return_value.read.return_value = body
         self.assertEqual(True, self.client.remote_procedure())
-        self.request.assert_called_once_with(self.url,
-                                             data=mock.ANY,
-                                             headers=mock.ANY)
+        self.request.assert_called_once_with(self.url, data=mock.ANY, headers=mock.ANY)
         _, kwargs = self.request.call_args
-        assert kwargs['headers']['X-Auth-Header'] == 'dXNlcm5hbWU6cGFzc3dvcmQ='
+        assert kwargs["headers"]["X-Auth-Header"] == "dXNlcm5hbWU6cGFzc3dvcmQ="
 
     def test_http_error(self):
         self.urlopen.side_effect = Exception()
@@ -70,7 +66,7 @@ class TestClient(unittest.TestCase):
         body = b'{"jsonrpc": "2.0", "error": {"code": -32603, "message": "Internal error"}, "id": 123}'
         self.urlopen.return_value.read.return_value = body
 
-        with self.assertRaises(kanboard.ClientError, msg='Internal error'):
+        with self.assertRaises(kanboard.ClientError, msg="Internal error"):
             self.client.remote_procedure()
 
     def test_async_method_call_recognised(self):
@@ -98,6 +94,6 @@ class TestClient(unittest.TestCase):
 
     @staticmethod
     def _create_mocks():
-        request_patcher = mock.patch('urllib.request.Request')
-        urlopen_patcher = mock.patch('urllib.request.urlopen')
+        request_patcher = mock.patch("urllib.request.Request")
+        urlopen_patcher = mock.patch("urllib.request.urlopen")
         return request_patcher.start(), urlopen_patcher.start()
