@@ -65,7 +65,7 @@ class Client:
         ignore_hostname_verification: bool = False,
         user_agent: str = "Kanboard Python API Client",
         loop: Optional[asyncio.AbstractEventLoop] = None,
-    ):
+    ) -> None:
         """
         Initialize a new Kanboard API client instance.
 
@@ -134,6 +134,8 @@ class Client:
 
     @staticmethod
     def _parse_response(response: bytes):
+        if not response:
+            raise ClientError("Empty response from server")
         try:
             body = json.loads(response.decode(errors="ignore"))
 
@@ -142,8 +144,8 @@ class Client:
                 raise ClientError(message)
 
             return body.get("result")
-        except ValueError:
-            return None
+        except ValueError as e:
+            raise ClientError(f"Failed to parse JSON response: {e}")
 
     def _do_request(self, headers: Dict[str, str], body: Dict):
         try:
