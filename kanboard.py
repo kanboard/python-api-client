@@ -29,7 +29,7 @@ from typing import Dict, Optional
 from urllib import request as http
 
 
-DEFAULT_AUTH_HEADER = 'Authorization'
+DEFAULT_AUTH_HEADER = "Authorization"
 ASYNC_FUNCNAME_MARKER = "_async"
 
 
@@ -39,10 +39,12 @@ class ClientError(Exception):
 
 class Client:
     """
-    Kanboard API client
+    Kanboard API client for interacting with the Kanboard JSON-RPC API.
 
-    Example:
+    This client provides both synchronous and asynchronous access to all Kanboard API methods.
+    Methods are dynamically resolved based on the Kanboard API method names, using snake_case for Python calls.
 
+    Example usage:
         from kanboard import Client
 
         kb = Client(url="http://localhost/jsonrpc.php",
@@ -50,32 +52,38 @@ class Client:
                     password="your_api_token")
 
         project_id = kb.create_project(name="My project")
-
     """
 
-    def __init__(self,
-                 url: str,
-                 username: str,
-                 password: str,
-                 auth_header: str = DEFAULT_AUTH_HEADER,
-                 cafile: Optional[str] = None,
-                 insecure: bool = False,
-                 ignore_hostname_verification: bool = False,
-                 user_agent: str = 'Kanboard Python API Client',
-                 loop: Optional[asyncio.AbstractEventLoop] = None):
+    def __init__(
+        self,
+        url: str,
+        username: str,
+        password: str,
+        auth_header: str = DEFAULT_AUTH_HEADER,
+        cafile: Optional[str] = None,
+        insecure: bool = False,
+        ignore_hostname_verification: bool = False,
+        user_agent: str = "Kanboard Python API Client",
+        loop: Optional[asyncio.AbstractEventLoop] = None,
+    ):
         """
-        Constructor
+        Initialize a new Kanboard API client instance.
 
         Args:
-            url: API url endpoint
-            username: API username or real username
-            password: API token or user password
-            auth_header: API HTTP header
-            cafile: Path to a custom CA certificate
-            insecure: Ignore SSL certificate errors and ignore hostname mismatches
-            ignore_hostname_verification: Ignore SSL certificate hostname verification
-            user_agent: Use a personalized user agent
-            loop: An asyncio event loop. Default: asyncio.get_event_loop()
+            url (str): The Kanboard JSON-RPC API endpoint URL (e.g.,
+                'http://localhost/jsonrpc.php').
+            username (str): Kanboard API username or real username.
+            password (str): Kanboard API token or user password.
+            auth_header (str, optional): HTTP header for authentication. Defaults to 'Authorization'.
+            cafile (Optional[str], optional): Path to a custom CA certificate file. Defaults to None.
+            insecure (bool, optional): If True, ignore SSL certificate errors and hostname mismatches.
+                Defaults to False.
+            ignore_hostname_verification (bool, optional): If True, skip SSL certificate hostname verification.
+                Defaults to False.
+            user_agent (str, optional): Custom User-Agent string for HTTP requests. Defaults to
+                'Kanboard Python API Client'.
+            loop (Optional[asyncio.AbstractEventLoop], optional): Asyncio event loop to use. If None, uses the
+                current event loop or creates a new one.
         """
         self._url = url
         self._username = username
@@ -94,16 +102,21 @@ class Client:
 
     def __getattr__(self, name: str):
         if self.is_async_method_name(name):
+
             async def function(*args, **kwargs):
                 return await self._event_loop.run_in_executor(
                     None,
                     functools.partial(
-                        self.execute,
-                        method=self._to_camel_case(self.get_funcname_from_async_name(name)), **kwargs))
+                        self.execute, method=self._to_camel_case(self.get_funcname_from_async_name(name)), **kwargs
+                    ),
+                )
+
             return function
         else:
+
             def function(*args, **kwargs):
                 return self.execute(method=self._to_camel_case(name), **kwargs)
+
             return function
 
     @staticmethod
@@ -112,31 +125,29 @@ class Client:
 
     @staticmethod
     def get_funcname_from_async_name(funcname: str) -> str:
-        return funcname[:len(funcname) - len(ASYNC_FUNCNAME_MARKER)]
+        return funcname[: len(funcname) - len(ASYNC_FUNCNAME_MARKER)]
 
     @staticmethod
     def _to_camel_case(snake_str: str) -> str:
-        components = snake_str.split('_')
-        return components[0] + ''.join(x.title() for x in components[1:])
+        components = snake_str.split("_")
+        return components[0] + "".join(x.title() for x in components[1:])
 
     @staticmethod
     def _parse_response(response: bytes):
         try:
-            body = json.loads(response.decode(errors='ignore'))
+            body = json.loads(response.decode(errors="ignore"))
 
-            if 'error' in body:
-                message = body.get('error').get('message')
+            if "error" in body:
+                message = body.get("error").get("message")
                 raise ClientError(message)
 
-            return body.get('result')
+            return body.get("result")
         except ValueError:
             return None
 
     def _do_request(self, headers: Dict[str, str], body: Dict):
         try:
-            request = http.Request(self._url,
-                                   headers=headers,
-                                   data=json.dumps(body).encode())
+            request = http.Request(self._url, headers=headers, data=json.dumps(body).encode())
 
             ssl_context = ssl.create_default_context(cafile=self._cafile)
             if self._insecure:
@@ -153,31 +164,26 @@ class Client:
 
     def execute(self, method: str, **kwargs):
         """
-        Call remote API procedure
+        Call a remote Kanboard API procedure.
 
         Args:
-            method: Procedure name
-            kwargs: Procedure named arguments
+            method (str): The Kanboard API method name in camelCase (e.g., 'createProject').
+            **kwargs: Named arguments to pass to the API method.
 
         Returns:
-            Procedure result
+            The result returned by the Kanboard API for the requested method.
 
         Raises:
-            urllib.error.HTTPError: Any HTTP error (Python 3)
+            ClientError: If the API returns an error or if a network/HTTP error occurs.
         """
-        payload = {
-            'id': 1,
-            'jsonrpc': '2.0',
-            'method': method,
-            'params': kwargs
-        }
+        payload = {"id": 1, "jsonrpc": "2.0", "method": method, "params": kwargs}
 
-        credentials = base64.b64encode('{}:{}'.format(self._username, self._password).encode())
-        auth_header_prefix = 'Basic ' if self._auth_header == DEFAULT_AUTH_HEADER else ''
+        credentials = base64.b64encode("{}:{}".format(self._username, self._password).encode())
+        auth_header_prefix = "Basic " if self._auth_header == DEFAULT_AUTH_HEADER else ""
         headers = {
             self._auth_header: auth_header_prefix + credentials.decode(),
-            'Content-Type': 'application/json',
-            'User-Agent': self._user_agent,
+            "Content-Type": "application/json",
+            "User-Agent": self._user_agent,
         }
 
         return self._do_request(headers, payload)
