@@ -43,8 +43,8 @@ Creating a new team project
 
     import kanboard
 
-    kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
-    project_id = kb.create_project(name='My project')
+    kb = kanboard.Client("http://localhost/jsonrpc.php", "jsonrpc", "your_api_token")
+    project_id = kb.create_project(name="My project")
 
 
 Authenticate as user
@@ -54,8 +54,24 @@ Authenticate as user
 
     import kanboard
 
-    kb = kanboard.Client('http://localhost/jsonrpc.php', 'admin', 'secret')
+    kb = kanboard.Client("http://localhost/jsonrpc.php", "admin", "secret")
     kb.get_my_projects()
+
+Use a custom authentication header
+----------------------------------
+
+If your Kanboard instance is configured to use a custom authentication header (for example, by setting ``define('API_AUTHENTICATION_HEADER', 'X-My-Custom-Auth-Header');`` in your Kanboard configuration), you can authenticate using the following code:
+
+.. code-block:: python
+
+    import kanboard
+
+    kb = kanboard.Client(url="http://localhost/jsonrpc.php",
+                         username="demo",
+                         password="secret",
+                         auth_header="X-My-Custom-Auth-Header")
+
+    kb.get_me()
 
 Create a new task
 -----------------
@@ -64,9 +80,9 @@ Create a new task
 
     import kanboard
 
-    kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
-    project_id = kb.create_project(name='My project')
-    task_id = kb.create_task(project_id=project_id, title='My task title')
+    kb = kanboard.Client("http://localhost/jsonrpc.php", "jsonrpc", "your_api_token")
+    project_id = kb.create_project(name="My project")
+    task_id = kb.create_task(project_id=project_id, title="My task title")
 
 Use a personalized user agent
 -----------------------------
@@ -75,10 +91,10 @@ Use a personalized user agent
 
     import kanboard
 
-    kb = kanboard.Client(url='http://localhost/jsonrpc.php',
-                         username='admin',
-                         password='secret',
-                         user_agent='My Kanboard client')
+    kb = kanboard.Client(url="http://localhost/jsonrpc.php",
+                         username="admin",
+                         password="secret",
+                         user_agent="My Kanboard client")
 
 SSL connection and self-signed certificates
 ===========================================
@@ -89,7 +105,7 @@ Example with a valid certificate:
 
     import kanboard
 
-    kb = kanboard.Client('https://example.org/jsonrpc.php', 'admin', 'secret')
+    kb = kanboard.Client("https://example.org/jsonrpc.php", "admin", "secret")
     kb.get_my_projects()
 
 Example with a custom certificate:
@@ -98,10 +114,10 @@ Example with a custom certificate:
 
     import kanboard
 
-    kb = kanboard.Client(url='https://example.org/jsonrpc.php',
-                         username='admin',
-                         password='secret',
-                         cafile='/path/to/my/cert.pem')
+    kb = kanboard.Client(url="https://example.org/jsonrpc.php",
+                         username="admin",
+                         password="secret",
+                         cafile="/path/to/my/cert.pem")
     kb.get_my_projects()
 
 Example with a custom certificate and hostname mismatch:
@@ -110,10 +126,10 @@ Example with a custom certificate and hostname mismatch:
 
     import kanboard
 
-    kb = kanboard.Client(url='https://example.org/jsonrpc.php',
-                         username='admin',
-                         password='secret',
-                         cafile='/path/to/my/cert.pem',
+    kb = kanboard.Client(url="https://example.org/jsonrpc.php",
+                         username="admin",
+                         password="secret",
+                         cafile="/path/to/my/cert.pem",
                          ignore_hostname_verification=True)
     kb.get_my_projects()
 
@@ -123,9 +139,9 @@ Ignore invalid/expired certificates and hostname mismatches, which will make you
 
     import kanboard
 
-    kb = kanboard.Client(url='https://example.org/jsonrpc.php',
-                         username='admin',
-                         password='secret',
+    kb = kanboard.Client(url="https://example.org/jsonrpc.php",
+                         username="admin",
+                         password="secret",
                          insecure=True)
     kb.get_my_projects()
 
@@ -143,10 +159,10 @@ to ``create_project`` can be made asynchronous by calling ``create_project_async
     import asyncio
     import kanboard
 
-    kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
+    kb = kanboard.Client("http://localhost/jsonrpc.php", "jsonrpc", "your_api_token")
 
     loop = asyncio.get_event_loop()
-    project_id = loop.run_until_complete(kb.create_project_async(name='My project'))
+    project_id = loop.run_until_complete(kb.create_project_async(name="My project"))
 
 
 .. code-block:: python
@@ -155,8 +171,8 @@ to ``create_project`` can be made asynchronous by calling ``create_project_async
     import kanboard
 
     async def call_within_function():
-        kb = kanboard.Client('http://localhost/jsonrpc.php', 'jsonrpc', 'your_api_token')
-        return await kb.create_project_async(name='My project')
+        kb = kanboard.Client("http://localhost/jsonrpc.php", "jsonrpc", "your_api_token")
+        return await kb.create_project_async(name="My project")
 
     loop = asyncio.get_event_loop()
     project_id = loop.run_until_complete(call_within_function())
