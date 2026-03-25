@@ -17,6 +17,9 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 
+[project.optional-dependencies]
+dev = ["ruff"]
+
 [project.urls]
 "Homepage" = "https://github.com/kanboard/python-api-client"
 "Bug Reports" = "https://github.com/kanboard/python-api-client/issues"
@@ -25,3 +28,9 @@ classifiers = [
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
