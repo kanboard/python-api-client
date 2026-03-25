@@ -105,6 +105,55 @@ class TestClient(unittest.TestCase):
         method = self.client.my_method_async()
         self.assertIsInstance(method, types.CoroutineType)
 
+    def test_async_call_returns_result(self):
+        body = b'{"jsonrpc": "2.0", "result": 42, "id": 123}'
+        self.urlopen.return_value.read.return_value = body
+        loop = self.client._event_loop
+        result = loop.run_until_complete(self.client.my_method_async())
+        self.assertEqual(42, result)
+
+    def test_custom_user_agent(self):
+        client = kanboard.Client(self.url, "username", "password", user_agent="CustomAgent/1.0")
+        body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
+        self.urlopen.return_value.read.return_value = body
+        client.remote_procedure()
+        _, kwargs = self.request.call_args
+        self.assertEqual("CustomAgent/1.0", kwargs["headers"]["User-Agent"])
+
+    def test_default_user_agent(self):
+        body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
+        self.urlopen.return_value.read.return_value = body
+        self.client.remote_procedure()
+        _, kwargs = self.request.call_args
+        self.assertEqual("Kanboard Python API Client", kwargs["headers"]["User-Agent"])
+
+    @mock.patch("ssl.create_default_context")
+    def test_insecure_disables_ssl_verification(self, mock_ssl_context):
+        client = kanboard.Client(self.url, "username", "password", insecure=True)
+        ctx = mock_ssl_context.return_value
+        body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
+        self.urlopen.return_value.read.return_value = body
+        client.remote_procedure()
+        self.assertFalse(ctx.check_hostname)
+        self.assertEqual(ctx.verify_mode, __import__("ssl").CERT_NONE)
+
+    @mock.patch("ssl.create_default_context")
+    def test_ignore_hostname_verification(self, mock_ssl_context):
+        client = kanboard.Client(self.url, "username", "password", ignore_hostname_verification=True)
+        ctx = mock_ssl_context.return_value
+        body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
+        self.urlopen.return_value.read.return_value = body
+        client.remote_procedure()
+        self.assertFalse(ctx.check_hostname)
+
+    @mock.patch("ssl.create_default_context")
+    def test_cafile_passed_to_ssl_context(self, mock_ssl_context):
+        client = kanboard.Client(self.url, "username", "password", cafile="/path/to/ca.pem")
+        body = b'{"jsonrpc": "2.0", "result": true, "id": 123}'
+        self.urlopen.return_value.read.return_value = body
+        client.remote_procedure()
+        mock_ssl_context.assert_called_once_with(cafile="/path/to/ca.pem")
+
     @staticmethod
     def _create_mocks():
         request_patcher = mock.patch("urllib.request.Request")
