@@ -20,10 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import unittest
-from unittest import mock
 import types
+import unittest
 import warnings
+from unittest import mock
 
 import kanboard
 
