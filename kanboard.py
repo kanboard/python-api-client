@@ -63,6 +63,7 @@ class Client:
         insecure: bool = False,
         ignore_hostname_verification: bool = False,
         user_agent: str = "Kanboard Python API Client",
+        timeout: Optional[int] = 30,
         loop: Optional[asyncio.AbstractEventLoop] = None,
     ) -> None:
         """
@@ -81,6 +82,7 @@ class Client:
                 Defaults to False.
             user_agent (str, optional): Custom User-Agent string for HTTP requests. Defaults to
                 'Kanboard Python API Client'.
+            timeout (Optional[int], optional): Request timeout in seconds. Defaults to 30. Set to None to disable.
             loop (Optional[asyncio.AbstractEventLoop], optional): Asyncio event loop to use. If None, uses the
                 current event loop or creates a new one.
         """
@@ -91,6 +93,7 @@ class Client:
         self._cafile = cafile
         self._insecure = insecure
         self._user_agent = user_agent
+        self._timeout = timeout
         self._ignore_hostname_verification = ignore_hostname_verification
 
         if not loop:
@@ -160,7 +163,7 @@ class Client:
             if self._ignore_hostname_verification:
                 ssl_context.check_hostname = False
 
-            response = http.urlopen(request, context=ssl_context).read()
+            response = http.urlopen(request, context=ssl_context, timeout=self._timeout).read()
         except Exception as e:
             raise ClientError(str(e))
         return self._parse_response(response)
