@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import asyncio
 import types
 import unittest
 import warnings
@@ -111,6 +112,14 @@ class TestClient(unittest.TestCase):
         loop = self.client._event_loop
         result = loop.run_until_complete(self.client.my_method_async())
         self.assertEqual(42, result)
+
+    def test_custom_event_loop(self):
+        custom_loop = asyncio.new_event_loop()
+        try:
+            client = kanboard.Client(self.url, "username", "password", loop=custom_loop)
+            self.assertIs(client._event_loop, custom_loop)
+        finally:
+            custom_loop.close()
 
     def test_custom_user_agent(self):
         client = kanboard.Client(self.url, "username", "password", user_agent="CustomAgent/1.0")
