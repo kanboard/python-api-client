@@ -20,14 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import json
+import asyncio
 import base64
 import functools
-import asyncio
+import json
 import ssl
-from typing import Dict, Optional
+from typing import Any, Callable, Dict, Optional
 from urllib import request as http
-
 
 DEFAULT_AUTH_HEADER = "Authorization"
 ASYNC_FUNCNAME_MARKER = "_async"
@@ -100,21 +99,23 @@ class Client:
             except RuntimeError:
                 self._event_loop = asyncio.new_event_loop()
 
-    def __getattr__(self, name: str):
+    def __getattr__(self, name: str) -> Callable[..., Any]:
         if self.is_async_method_name(name):
 
-            async def function(*args, **kwargs):
+            async def function(*args: Any, **kwargs: Any) -> Any:
                 return await self._event_loop.run_in_executor(
                     None,
                     functools.partial(
-                        self.execute, method=self._to_camel_case(self.get_funcname_from_async_name(name)), **kwargs
+                        self.execute,
+                        method=self._to_camel_case(self.get_funcname_from_async_name(name)),
+                        **kwargs,
                     ),
                 )
 
             return function
         else:
 
-            def function(*args, **kwargs):
+            def function(*args: Any, **kwargs: Any) -> Any:
                 return self.execute(method=self._to_camel_case(name), **kwargs)
 
             return function
@@ -133,7 +134,7 @@ class Client:
         return components[0] + "".join(x.title() for x in components[1:])
 
     @staticmethod
-    def _parse_response(response: bytes):
+    def _parse_response(response: bytes) -> Any:
         if not response:
             raise ClientError("Empty response from server")
         try:
@@ -147,7 +148,7 @@ class Client:
         except ValueError as e:
             raise ClientError(f"Failed to parse JSON response: {e}")
 
-    def _do_request(self, headers: Dict[str, str], body: Dict):
+    def _do_request(self, headers: Dict[str, str], body: Dict[str, Any]) -> Any:
         try:
             request = http.Request(self._url, headers=headers, data=json.dumps(body).encode())
 
@@ -164,7 +165,7 @@ class Client:
             raise ClientError(str(e))
         return self._parse_response(response)
 
-    def execute(self, method: str, **kwargs):
+    def execute(self, method: str, **kwargs: Any) -> Any:
         """
         Call a remote Kanboard API procedure.
 
