@@ -96,7 +96,9 @@ class Client:
         self._timeout = timeout
         self._ignore_hostname_verification = ignore_hostname_verification
 
-        if not loop:
+        if loop:
+            self._event_loop = loop
+        else:
             try:
                 self._event_loop = asyncio.get_event_loop()
             except RuntimeError:
