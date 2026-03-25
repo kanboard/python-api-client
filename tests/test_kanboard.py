@@ -83,6 +83,13 @@ class TestClient(unittest.TestCase):
         with self.assertRaises(kanboard.ClientError, msg="Internal error"):
             self.client.remote_procedure()
 
+    def test_application_error_non_dict(self):
+        body = b'{"jsonrpc": "2.0", "error": "Something went wrong", "id": 123}'
+        self.urlopen.return_value.read.return_value = body
+
+        with self.assertRaises(kanboard.ClientError, msg="Something went wrong"):
+            self.client.remote_procedure()
+
     def test_async_method_call_recognised(self):
         method_name = "some_method_async"
         result = self.client.is_async_method_name(method_name)
