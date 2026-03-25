@@ -98,11 +98,25 @@ class Client:
 
         if loop:
             self._event_loop = loop
+            self._owns_event_loop = False
         else:
             try:
                 self._event_loop = asyncio.get_event_loop()
+                self._owns_event_loop = False
             except RuntimeError:
                 self._event_loop = asyncio.new_event_loop()
+                self._owns_event_loop = True
+
+    def __enter__(self) -> "Client":
+        return self
+
+    def __exit__(self, *args: Any) -> None:
+        self.close()
+
+    def close(self) -> None:
+        """Close the event loop if it was created by this client."""
+        if self._owns_event_loop and not self._event_loop.is_closed():
+            self._event_loop.close()
 
     def __getattr__(self, name: str) -> Callable[..., Any]:
         if self.is_async_method_name(name):
