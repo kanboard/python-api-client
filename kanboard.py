@@ -145,8 +145,9 @@ class Client:
         try:
             body = json.loads(response.decode(errors="ignore"))
 
-            if "error" in body:
-                message = body.get("error").get("message")
+            error = body.get("error")
+            if error:
+                message = error.get("message") if isinstance(error, dict) else str(error)
                 raise ClientError(message)
 
             return body.get("result")
