@@ -52,9 +52,11 @@ class TestClient(unittest.TestCase):
         assert kwargs["headers"]["X-Auth-Header"] == "dXNlcm5hbWU6cGFzc3dvcmQ="
 
     def test_http_error(self):
-        self.urlopen.side_effect = Exception()
-        with self.assertRaises(kanboard.ClientError):
+        original = Exception("connection refused")
+        self.urlopen.side_effect = original
+        with self.assertRaises(kanboard.ClientError) as cm:
             self.client.remote_procedure()
+        self.assertIs(cm.exception.__cause__, original)
 
     def test_empty_response_raises_client_error(self):
         self.urlopen.return_value.read.return_value = b""
@@ -68,6 +70,7 @@ class TestClient(unittest.TestCase):
         with self.assertRaises(kanboard.ClientError) as cm:
             self.client.remote_procedure()
         self.assertIn("Failed to parse JSON response", str(cm.exception))
+        self.assertIsInstance(cm.exception.__cause__, ValueError)
 
     def test_application_error(self):
         body = b'{"jsonrpc": "2.0", "error": {"code": -32603, "message": "Internal error"}, "id": 123}'

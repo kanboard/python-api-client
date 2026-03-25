@@ -166,7 +166,7 @@ class Client:
 
             return body.get("result")
         except ValueError as e:
-            raise ClientError(f"Failed to parse JSON response: {e}")
+            raise ClientError(f"Failed to parse JSON response: {e}") from e
 
     def _do_request(self, headers: Dict[str, str], body: Dict[str, Any]) -> Any:
         try:
@@ -182,7 +182,7 @@ class Client:
 
             response = http.urlopen(request, context=ssl_context, timeout=self._timeout).read()
         except Exception as e:
-            raise ClientError(str(e))
+            raise ClientError(str(e)) from e
         return self._parse_response(response)
 
     def execute(self, method: str, **kwargs: Any) -> Any:
